@@ -22,7 +22,7 @@ public class TabFirst extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(TabFirst.this, TabSecond.class);
+				Intent intent = new Intent(TabFirst.this, tracking.class);
 				startActivity(intent);
 			}
 		});

@@ -25,6 +25,8 @@
         <activity android:name="TabFirst"></activity>
         <activity android:name="TabSecond"></activity>
         <activity android:name="TabThird"></activity>
+        <activity android:name="tracking"></activity>
     </application>
-
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 </manifest>
