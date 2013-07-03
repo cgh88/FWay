@@ -15,7 +15,7 @@ public class tracking extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.tab_third);
+		setContentView(R.layout.tracker);
 		
 		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		
