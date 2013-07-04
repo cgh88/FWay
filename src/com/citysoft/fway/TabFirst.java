@@ -11,6 +11,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,18 +30,27 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TabFirst extends Activity{
+public class TabFirst extends Activity implements SensorEventListener{
     /** Called when the activity is first created. */
-	TextView text01;
-	long start_time = 0;
-	Handler handler = new Handler();
-	boolean bThread = false;
-	Button button01;
-	LocationManager lm;
-	TextView gpsTxt;
-	TextView dt;
-	float totDt = 0f; 
-	Double startLatitude=0d, startLongitude=0d;
+	private TextView text01;
+	private long start_time = 0;
+	private Handler handler = new Handler();
+	private boolean bThread = false;
+	private Button button01;
+	private LocationManager lm;
+	private TextView gpsTxt;
+	private TextView dt;
+	private TextView speedTxt;
+	private TextView altitudeTxt;
+	private TextView orienTxt;
+	private float totDt = 0f; 
+	private float gpsDt = 0f;
+	private int gpsSpeed = 0; 
+	private Double startLatitude=0d, startLongitude=0d;
+	private float azimut;
+	private SensorManager mSensorManager;
+	private Sensor accelerometer;
+	private Sensor magnetometer;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +60,9 @@ public class TabFirst extends Activity{
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         
         gpsTxt = (TextView) findViewById(R.id.gpstxt);
+        speedTxt = (TextView) findViewById(R.id.speedTxt);
+        altitudeTxt = (TextView) findViewById(R.id.altitudeTxt);
+        orienTxt = (TextView) findViewById(R.id.oriTxt);
         
 		if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 			gpsTxt.setTextColor(Color.parseColor("#FF0000"));
@@ -55,10 +72,12 @@ public class TabFirst extends Activity{
 			gpsTxt.setText("ON");
 		}
         
-        // πˆ∆∞ ¿Ã∫•∆Æ √≥∏Æ
+		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+	    accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	    magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+		
         button01 = (Button) findViewById(R.id.button01);
         text01 = (TextView) findViewById(R.id.txt01);
-        
         button01.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -84,8 +103,10 @@ public class TabFirst extends Activity{
         				while(bThread){
         					handler.post(new Runnable(){
         						public void run(){
-        							//Ω√∞£¡§∫∏ «•Ω√
         							timeChange(start_time);
+        							
+        							gpsSpeed = (int)((gpsDt/1000)*3600);
+        							speedTxt.setText(gpsSpeed+" Km/h");
         						}
         					});
         					
@@ -143,30 +164,33 @@ public class TabFirst extends Activity{
 			gpsTxt.setTextColor(Color.parseColor("#0000FF"));
 			gpsTxt.setText("ON");
 		}
+		
+		mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+	    mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
 		//Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show();
 	}
+    
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		mSensorManager.unregisterListener(this);
+		//lm.removeNmeaListener(listener);
+	}
 
-
-	/**
-     * ¿ßƒ° ¡§∫∏ »Æ¿Œ¿ª ¿ß«ÿ ¡§¿««— ∏ﬁº“µÂ
-     */
     private void startLocationService() {
-    	// ¿ßƒ° ∞¸∏Æ¿⁄ ∞¥√º ¬¸¡∂
     	LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		// ¿ßƒ° ¡§∫∏∏¶ πﬁ¿ª ∏ÆΩ∫≥  ª˝º∫
     	GPSListener gpsListener = new GPSListener();
 		long minTime = 0;
 		float minDistance = 0;
 
-		// GPS∏¶ ¿ÃøÎ«— ¿ßƒ° ø‰√ª
 		manager.requestLocationUpdates(
 					LocationManager.GPS_PROVIDER,
 					minTime,
 					minDistance,
 					gpsListener);
 
-		// ¿ßƒ° »Æ¿Œ¿Ã æ»µ«¥¬ ∞ÊøÏø°µµ √÷±Ÿø° »Æ¿Œµ» ¿ßƒ° ¡§∫∏ ∏’¿˙ »Æ¿Œ
 		try {
 			Location lastLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (lastLocation != null) {
@@ -179,30 +203,38 @@ public class TabFirst extends Activity{
 			ex.printStackTrace();
 		}
 
-		Toast.makeText(getApplicationContext(), "¿ßƒ° »Æ¿Œ¿Ã Ω√¿€µ«æ˙Ω¿¥œ¥Ÿ. ∑Œ±◊∏¶ »Æ¿Œ«œººø‰.", Toast.LENGTH_SHORT).show();
 
     }
     
-    /**
-     * ∏ÆΩ∫≥  ≈¨∑°Ω∫ ¡§¿«
-     */
 	private class GPSListener implements LocationListener {
-		/**
-		 * ¿ßƒ° ¡§∫∏∞° »Æ¿Œµ… ∂ß ¿⁄µø »£√‚µ«¥¬ ∏ﬁº“µÂ
-		 */
 	    public void onLocationChanged(Location location) {
 	    	
 			Double latitude = location.getLatitude();
 			Double longitude = location.getLongitude();
 			Double Altitude = location.getAltitude();
+			float Accuracy = location.getAccuracy();
 			
 			//float distance = location.distanceBetween(startLatitude, startLongitude, endLatitude, endLongitude, results)
+			
+			/*GpsStatus.NmeaListener ml = new GpsStatus.NmeaListener() {
+				
+				@Override
+				public void onNmeaReceived(long timestamp, String nmea) {
+					// TODO Auto-generated method stub
+					String str_temp[] = nmea.split(",");
+					if(str_temp[0].equals("GPGGA")){
+						Log.d("GPS Number", str_temp[7]);
+					}
+				}
+			}; */
 			
 			DecimalFormat format = new DecimalFormat(".######");
 			DecimalFormat format2 = new DecimalFormat("#.#");
 			
 			String msg = "Latitude : "+ format.format(latitude) + "\nLongitude:"+ format.format(longitude)+"\nAltitude:"+format.format(Altitude);
 			Log.i("GPSListener", msg);
+			
+			altitudeTxt.setText(""+Altitude.intValue()+" m");
 			
 			if(startLatitude==0 || startLongitude==0){
 				startLatitude = Double.parseDouble(format.format(latitude));
@@ -212,6 +244,7 @@ public class TabFirst extends Activity{
 				location.distanceBetween(startLatitude, startLongitude, latitude, longitude, results);
 				dt = (TextView) findViewById(R.id.dtTxt);
 				
+				gpsDt = results[0];
 				totDt += results[0];
 				
 				dt.setText(format2.format((totDt/1000))+" Km");
@@ -244,17 +277,15 @@ public class TabFirst extends Activity{
     }    
     
     public void fileSave(String text){
-    	String path = Environment.getExternalStorageDirectory().getAbsolutePath(); // ∆ƒ¿œ¿Ã ¿˙¿Âµ… ∞Ê∑Œ
-    	String fileName = "/android.txt"; // ∆ƒ¿œ ¿Ã∏ß
+    	String path = Environment.getExternalStorageDirectory().getAbsolutePath(); // Ï†ÄÏû•ÏÜåÏóê Ï†ÄÏû•
+    	String fileName = "/android.txt"; //ÌååÏùºÎ™Ö
     	File file = new File(path + fileName);
-    	
-    	//String text = "¿˙¿Âµ… ≥ªøÎ"; // ¿˙¿Âµ… ≥ªøÎ
     	
     	FileOutputStream fos = null;
     	try {
-    		fos = new FileOutputStream(file, true); // ∆ƒ¿œ ª˝º∫
-    		fos.write((text).getBytes()); // ∆ƒ¿œø° ≥ªøÎ ¿˙¿Â
-    		fos.close(); // ∆ƒ¿œ ¥›±‚
+    		fos = new FileOutputStream(file, true);
+    		fos.write((text).getBytes());
+    		fos.close();
     	} catch (IOException e) {
     		e.printStackTrace();
 		}
@@ -263,9 +294,9 @@ public class TabFirst extends Activity{
     private void createGpsDisableAlert(){
 		//Log.i("fway", "createGpsDisableAlert");
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("GPS∞° ≤®¡Æ¿÷Ω¿¥œ¥Ÿ.\n«ÿ¥Á App¿ª ªÁøÎ«œΩ√∑¡∏È GPS∏¶ ƒ—æﬂ«’¥œ¥Ÿ.\nƒ—Ω√∞⁄Ω¿¥œ±Ó?")
+		builder.setMessage("GPSÎ•º ÏºúÏïºÎßå ÏÇ¨Ïö©Ïù¥ Í∞ÄÎä•Ìï©ÎãàÎã§.\nGPSÎ•º ÏºúÏãúÍ≤†ÏäµÎãàÍπå?")
 				 .setCancelable(false)
-				 .setPositiveButton("GPSƒ—±‚",
+				 .setPositiveButton("GPSÏºúÍ∏∞",
 						 new DialogInterface.OnClickListener() {
 							
 							@Override
@@ -274,7 +305,7 @@ public class TabFirst extends Activity{
 								showGpsOption();
 							}
 						})
-				 .setNegativeButton("√Îº“", 
+				 .setNegativeButton("Ï∑®ÏÜå", 
 						 new DialogInterface.OnClickListener() {
 						 	@Override
 							public void onClick(DialogInterface dialog, int id) {
@@ -288,5 +319,67 @@ public class TabFirst extends Activity{
     private void showGpsOption(){
 		Intent gpsOptinIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 		startActivity(gpsOptinIntent);
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	float[] mGravity;
+	float[] mGeomagnetic;
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		float orientations = 0f;
+		// TODO Auto-generated method stub
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
+		      mGravity = event.values;
+	    if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
+		      mGeomagnetic = event.values;
+	    if (mGravity != null && mGeomagnetic != null) {
+        float R[] = new float[9];
+	    float I[] = new float[9];
+	    boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+		    if (success) {
+		      float orientation[] = new float[3];
+		      SensorManager.getOrientation(R, orientation);
+		      azimut = orientation[0]; // orientation contains: azimut, pitch and roll
+		    }
+		}
+	    DecimalFormat azimutformat = new DecimalFormat("###");
+	    
+	    orientations = azimut*360/(2*3.14159f);
+	    //orienTxt.setText("azimut: "+azimutformat.format(orientations));
+	    
+	    if(Integer.parseInt(azimutformat.format(orientations)) < 0){
+	    	//orienTxt.setText("azimut: "+azimutformat.format(orientations));
+	    	if(Math.abs(orientations) >= 0 && Math.abs(orientations) < 10){
+		    	orienTxt.setText("N");
+		    }else if(Math.abs(orientations) >= 10 && Math.abs(orientations) < 80){
+		    	orienTxt.setText("N E");
+		    }else if(Math.abs(orientations) >= 80 && Math.abs(orientations) < 100){
+		    	orienTxt.setText("E");
+		    }else if(Math.abs(orientations) >= 100 && Math.abs(orientations) < 170){
+		    	orienTxt.setText("S E");
+		    }else if(Math.abs(orientations) >= 170 && Math.abs(orientations) < 180){
+		    	orienTxt.setText("S");
+		    }
+	    }else{
+	    	
+	    	if(Math.abs(orientations) >= 0 && Math.abs(orientations) < 10){
+		    	orienTxt.setText("N");
+		    }else if(Math.abs(orientations) >= 10 && Math.abs(orientations) < 80){
+		    	orienTxt.setText("N W");
+		    }else if(Math.abs(orientations) >= 80 && Math.abs(orientations) < 100){
+		    	orienTxt.setText("W");
+		    }else if(Math.abs(orientations) >= 100 && Math.abs(orientations) < 170){
+		    	orienTxt.setText("S W");
+		    }else if(Math.abs(orientations) >= 170 && Math.abs(orientations) < 180){
+		    	orienTxt.setText("S");
+		    }
+	    }
+	    
+	    /**/
 	}
 }

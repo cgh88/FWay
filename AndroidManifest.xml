@@ -26,7 +26,10 @@
         <activity android:name="TabSecond"></activity>
         <activity android:name="TabThird"></activity>
         <activity android:name="tracking"></activity>
+        <activity android:name="NMapViewer"></activity>
     </application>
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 </manifest>
