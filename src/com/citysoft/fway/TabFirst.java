@@ -69,10 +69,6 @@ public class TabFirst extends Activity implements SensorEventListener{
 	//private Timer        UITimer=null;
 	private int count = 0;
 	
-	//Back Button Process
-	private final long FINSH_INTERVAL_TIME = 2000;
-	private long backPressedTime = 0;
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,7 +220,9 @@ public class TabFirst extends Activity implements SensorEventListener{
             }
         }
     };
-    
+    //Back Button Process
+  	private final long FINSH_INTERVAL_TIME = 2000;
+  	private long backPressedTime = 0;
     @Override
 	public void onBackPressed() {
 		// TODO Back Button Two Time Close

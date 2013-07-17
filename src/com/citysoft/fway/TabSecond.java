@@ -2,7 +2,6 @@ package com.citysoft.fway;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapPolyline;
@@ -26,10 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TabSecond extends Activity
+public class TabSecond extends Activity 
 	implements MapView.OpenAPIKeyAuthenticationResultListener, MapView.MapViewEventListener, MapView.CurrentLocationEventListener, MapView.POIItemEventListener, MapReverseGeoCoder.ReverseGeoCodingResultListener{
-		
-
+	
 	private static final int CURRENT_LOC = Menu.FIRST + 1;
 	private static final int CURRENT_LOC_HEADING = Menu.FIRST + 2;
 	private static final int MAP_HYBRID = Menu.FIRST + 3;
@@ -38,13 +36,13 @@ public class TabSecond extends Activity
 	
 	private static final String LOG_TAG = "Tag: ";
 	
-	private static final String api_key = "98695caa602cc3e7babefa65af2dc059c3f09e13";
+	private static final String api_key = "aa2e5c4308f70ae431c6a8459514d8e74bd15bf7";
 	
 	private MapView mapView;
 	private MapPOIItem poiItem;
 	private MapReverseGeoCoder reverseGeoCoder = null;
 	
-	//À§Ä¡ÀúÀå
+	//ìœ„ì¹˜ì €ì¥
 	private List<Double> lat_lst;
 	private List<Double> long_lst;
 	private boolean onStart = false;
@@ -101,11 +99,11 @@ public class TabSecond extends Activity
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, CURRENT_LOC, Menu.NONE, "ÇöÀçÀ§Ä¡");
-		menu.add(0, CURRENT_LOC_HEADING, Menu.NONE, "³ªÄ§¹İÄÑ±â");
-		menu.add(0, MAP_HYBRID, Menu.NONE, "¸Ê Hybrid");
-		menu.add(0, TRACKING_ON, Menu.NONE, "Æ®·¡Å·½ÃÀÛ");
-		menu.add(0, TRACKING_OFF, Menu.NONE, "Æ®·¡Å·³¡");
+		menu.add(0, CURRENT_LOC, Menu.NONE, "í˜„ì¬ìœ„ì¹˜");
+		menu.add(0, CURRENT_LOC_HEADING, Menu.NONE, "ë‚˜ì¹¨ë°˜ì¼œê¸°");
+		menu.add(0, MAP_HYBRID, Menu.NONE, "ë§µ Hybrid");
+		menu.add(0, TRACKING_ON, Menu.NONE, "íŠ¸ë˜í‚¹ì‹œì‘");
+		menu.add(0, TRACKING_OFF, Menu.NONE, "íŠ¸ë˜í‚¹ë");
 		Log.i(LOG_TAG, "onCreateOptionsMenu");
 		return true;
 	}
@@ -142,7 +140,7 @@ public class TabSecond extends Activity
 		case TRACKING_ON:
 		{
 			if(onStart){
-				new AlertDialog.Builder(this).setTitle("Alert").setMessage("Æ®·¡Å·ÁßÀÔ´Ï´Ù!").setNeutralButton("´İ±â", null).show();
+				new AlertDialog.Builder(this).setTitle("Alert").setMessage("íŠ¸ë˜í‚¹ì¤‘ì…ë‹ˆë‹¤!").setNeutralButton("ë‹«ê¸°", null).show();
 				return true;
 			}
 			
@@ -171,7 +169,7 @@ public class TabSecond extends Activity
 		{
 			//Toast.makeText(MainActivity.this, (CharSequence) loc_lst, Toast.LENGTH_LONG).show();
 			if(!onStart){
-				new AlertDialog.Builder(this).setTitle("Alert").setMessage("Æ®·¡Å·À» ½ÃÀÛÇÏ¼¼¿ä!").setNeutralButton("´İ±â", null).show();
+				new AlertDialog.Builder(this).setTitle("Alert").setMessage("íŠ¸ë˜í‚¹ì„ ì‹œì‘í•˜ì„¸ìš”!").setNeutralButton("ë‹«ê¸°", null).show();
 				return true;
 			}
 			
@@ -201,7 +199,7 @@ public class TabSecond extends Activity
 		return super.onOptionsItemSelected(item);
 	}
     
-    //GPSÃ¼Å©
+    //GPSì²´í¬
     public boolean checkGPS() {
     	  LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
     	  boolean isGPS = lm.isProviderEnabled (LocationManager.GPS_PROVIDER);
@@ -209,7 +207,7 @@ public class TabSecond extends Activity
     	   return true;
     	  }
     	  else {
-    	   Toast.makeText(TabSecond.this, "GPS »ç¿ëÀ» Ã¼Å©ÇØÁÖ¼¼¿ä .", Toast.LENGTH_LONG).show();
+    	   Toast.makeText(TabSecond.this, "GPS ì‚¬ìš©ì„ ì²´í¬í•´ì£¼ì„¸ìš” .", Toast.LENGTH_LONG).show();
     	   startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
     	  }
     	  return false;
@@ -319,12 +317,12 @@ public class TabSecond extends Activity
 	@Override
 	public void onMapViewInitialized(MapView arg0) {		
 		/*if(checkGPS()){
-			Toast.makeText(MainActivity.this, "GPS°¡ ÄÑÁ®ÀÖ½À´Ï´Ù", Toast.LENGTH_LONG).show();
+			Toast.makeText(MainActivity.this, "GPSê°€ ì¼œì ¸ìˆìŠµë‹ˆë‹¤", Toast.LENGTH_LONG).show();
 			//TODO
 		}else{
-			Toast.makeText(MainActivity.this, "GPS°¡ ²¨Á®ÀÖ½À´Ï´Ù", Toast.LENGTH_LONG).show();
+			Toast.makeText(MainActivity.this, "GPSê°€ êº¼ì ¸ìˆìŠµë‹ˆë‹¤", Toast.LENGTH_LONG).show();
 		}*/
-		checkGPS();
+		//checkGPS();
 		
 		//mapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
 		mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(cur_lat,cur_long), 2, true);
@@ -358,25 +356,25 @@ public class TabSecond extends Activity
 	}    
 	
 	/**
-     * À§Ä¡ Á¤º¸ È®ÀÎÀ» À§ÇØ Á¤ÀÇÇÑ ¸Ş¼Òµå
+     * ìœ„ì¹˜ ì •ë³´ í™•ì¸ì„ ìœ„í•´ ì •ì˜í•œ ë©”ì†Œë“œ
      */
     private void startLocationService() {
-    	// À§Ä¡ °ü¸®ÀÚ °´Ã¼ ÂüÁ¶
+    	// ìœ„ì¹˜ ê´€ë¦¬ì ê°ì²´ ì°¸ì¡°
     	LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-		// À§Ä¡ Á¤º¸¸¦ ¹ŞÀ» ¸®½º³Ê »ı¼º
+		// ìœ„ì¹˜ ì •ë³´ë¥¼ ë°›ì„ ë¦¬ìŠ¤ë„ˆ ìƒì„±
     	GPSListener gpsListener = new GPSListener();
 		long minTime = 5000;
 		float minDistance = 0;
 
-		// GPS¸¦ ÀÌ¿ëÇÑ À§Ä¡ ¿äÃ»
+		// GPSë¥¼ ì´ìš©í•œ ìœ„ì¹˜ ìš”ì²­
 		manager.requestLocationUpdates(
 					LocationManager.GPS_PROVIDER,
 					minTime,
 					minDistance,
 					gpsListener);
 
-		// À§Ä¡ È®ÀÎÀÌ ¾ÈµÇ´Â °æ¿ì¿¡µµ ÃÖ±Ù¿¡ È®ÀÎµÈ À§Ä¡ Á¤º¸ ¸ÕÀú È®ÀÎ
+		// ìœ„ì¹˜ í™•ì¸ì´ ì•ˆë˜ëŠ” ê²½ìš°ì—ë„ ìµœê·¼ì— í™•ì¸ëœ ìœ„ì¹˜ ì •ë³´ ë¨¼ì € í™•ì¸
 		try {
 			Location lastLocation = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (lastLocation != null) {
@@ -389,16 +387,16 @@ public class TabSecond extends Activity
 			ex.printStackTrace();
 		}
 
-		Toast.makeText(getApplicationContext(), "À§Ä¡ È®ÀÎÀÌ ½ÃÀÛµÇ¾ú½À´Ï´Ù. ·Î±×¸¦ È®ÀÎÇÏ¼¼¿ä.", Toast.LENGTH_SHORT).show();
+		Toast.makeText(getApplicationContext(), "ìœ„ì¹˜ í™•ì¸ì´ ì‹œì‘ë˜ì—ˆìŠµë‹ˆë‹¤. ë¡œê·¸ë¥¼ í™•ì¸í•˜ì„¸ìš”.", Toast.LENGTH_SHORT).show();
 
     }
 
     /**
-     * ¸®½º³Ê Å¬·¡½º Á¤ÀÇ
+     * ë¦¬ìŠ¤ë„ˆ í´ë˜ìŠ¤ ì •ì˜
      */
 	private class GPSListener implements LocationListener {
 		/**
-		 * À§Ä¡ Á¤º¸°¡ È®ÀÎµÉ ¶§ ÀÚµ¿ È£ÃâµÇ´Â ¸Ş¼Òµå
+		 * ìœ„ì¹˜ ì •ë³´ê°€ í™•ì¸ë  ë•Œ ìë™ í˜¸ì¶œë˜ëŠ” ë©”ì†Œë“œ
 		 */
 	    public void onLocationChanged(Location location) {
 			//Double latitude = location.getLatitude();

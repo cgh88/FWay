@@ -22,7 +22,7 @@ public class FwayMain extends TabActivity {
         
         tabHost.addTab(tabHost.newTabSpec("Tab02")
         		.setIndicator("Map") //, getResources().getDrawable(R.drawable.icon))
-        		.setContent(new Intent(this, NMapViewer.class)));
+        		.setContent(new Intent(this, TabSecond.class)));
         
         tabHost.addTab(tabHost.newTabSpec("Tab03")
         		.setIndicator("Preperence") //, getResources().getDrawable(R.drawable.ic_action_locate))
