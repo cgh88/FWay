@@ -13,18 +13,19 @@ public class FwayMain extends TabActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_fway_main);
         
+        //Bottom Tab
         TabHost tabHost = getTabHost();
         
         tabHost.addTab(tabHost.newTabSpec("Tab01")
-        		.setIndicator("First", getResources().getDrawable(R.drawable.slideshow))
+        		.setIndicator("Track") //, getResources().getDrawable(R.drawable.slideshow))  // Icon
         		.setContent(new Intent(this, TabFirst.class)));
         
         tabHost.addTab(tabHost.newTabSpec("Tab02")
-        		.setIndicator("Second", getResources().getDrawable(R.drawable.icon))
+        		.setIndicator("Map") //, getResources().getDrawable(R.drawable.icon))
         		.setContent(new Intent(this, NMapViewer.class)));
         
         tabHost.addTab(tabHost.newTabSpec("Tab03")
-        		.setIndicator("Third", getResources().getDrawable(R.drawable.ic_action_locate))
+        		.setIndicator("Preperence") //, getResources().getDrawable(R.drawable.ic_action_locate))
         		.setContent(new Intent(this, TabThird.class)));       
         
         tabHost.setCurrentTab(0);
