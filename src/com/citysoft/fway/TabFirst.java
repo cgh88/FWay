@@ -78,7 +78,8 @@ public class TabFirst extends Activity implements SensorEventListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tracker);       
         
-        pm= (PowerManager)getSystemService(Context.POWER_SERVICE);        
+        //파워 ON/OFF Check
+        //pm= (PowerManager)getSystemService(Context.POWER_SERVICE);        
         
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         
@@ -131,6 +132,8 @@ public class TabFirst extends Activity implements SensorEventListener{
 				if(bThread){
 					button01.setText("STOP");
 					startLocationService();
+					
+					//변수값 초기화
 					gpsSpeed = 0;
 					gpsDt= 0;
 					startLatitude=0d;
@@ -150,6 +153,7 @@ public class TabFirst extends Activity implements SensorEventListener{
         						public void run(){
         							timeChange(start_time);
         							
+        							//스피드구하기
         							//gpsSpeed = (int)((gpsDt/1000)*3600);
         							//speedTxt.setText(gpsSpeed+" Km/h"); 
         						}
@@ -270,7 +274,7 @@ public class TabFirst extends Activity implements SensorEventListener{
 		mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
 	    mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
 		//Toast.makeText(this, "onResume", Toast.LENGTH_LONG).show();
-	    System.out.println("Screen Status: "+pm.isScreenOn());
+	    //System.out.println("Screen Status: "+pm.isScreenOn());
 	}
     
 	@Override
@@ -278,7 +282,7 @@ public class TabFirst extends Activity implements SensorEventListener{
 		// TODO Auto-generated method stub
 		super.onPause();
 		mSensorManager.unregisterListener(this);
-		System.out.println("Screen Status: "+pm.isScreenOn());
+		//System.out.println("Screen Status: "+pm.isScreenOn());
 	}
 
     private void startLocationService() {
@@ -378,7 +382,7 @@ public class TabFirst extends Activity implements SensorEventListener{
 				newdt_time = System.currentTimeMillis()/1000;
 			}
 			
-//			Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 			//text02.setText(msg);
 			
 			//fileSave(msg);
@@ -436,7 +440,7 @@ public class TabFirst extends Activity implements SensorEventListener{
     	} catch (IOException e) {
     		e.printStackTrace();
 		}
-    	
+    	//GPX XML OUTPUT
     	XmlSerializer serializer = Xml.newSerializer();
     	try{
     		serializer.setOutput(fos, "UTF-8");
@@ -487,6 +491,7 @@ public class TabFirst extends Activity implements SensorEventListener{
 	}
     
     private void showGpsOption(){
+    	//GPS 환경설정 열기
 		Intent gpsOptinIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 		startActivity(gpsOptinIntent);
 	}
@@ -554,6 +559,9 @@ public class TabFirst extends Activity implements SensorEventListener{
 	    
 	    /**/
 	}
+	
+	//TimeTask Test
+	//Run UITimer(RepeatTask, 1000, 3000); 첫번째 인자: TimeTask, 두번째 인자: 1초후 실행, 세번째 인자: 3초간 반복 
 	private class RepeatTask extends TimerTask{
 		@Override
 		public void run() {
